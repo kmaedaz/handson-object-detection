@@ -13,7 +13,7 @@ net = cv2.dnn.readNetFromCaffe('/home/pi/models/MobileNetSSD_deploy.prototxt',
         '/home/pi/models/MobileNetSSD_deploy.caffemodel')
 
 def detect(frame):
-    # ƒ‚ƒfƒ‹‚ªŠú‘Ò‚·‚éŒ`ó‚É‰æ‘œƒf[ƒ^‚ğ‘Oˆ—‚·‚é
+    # ãƒ¢ãƒ‡ãƒ«ãŒæœŸå¾…ã™ã‚‹å½¢çŠ¶ã«ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’å‰å‡¦ç†ã™ã‚‹
     frame = cv2.resize(frame, (300, 300))
     blob = cv2.dnn.blobFromImage(
         image=frame,
@@ -22,28 +22,28 @@ def detect(frame):
         mean=127.5
     )
 
-    # ƒf[ƒ^‚Ì“ü—ÍEŒ‹‰Ê‚Ìæ‚èo‚µ
+    # ãƒ‡ãƒ¼ã‚¿ã®å…¥åŠ›ãƒ»çµæœã®å–ã‚Šå‡ºã—
     net.setInput(blob) 
     out = net.forward()
-    # o—ÍŒ‹‰Ê‚Ìæ‚èo‚µ
+    # å‡ºåŠ›çµæœã®å–ã‚Šå‡ºã—
     boxes = out[0,0,:,3:7] * np.array([300, 300, 300, 300])
     classes = out[0,0,:,1]
     confidences = out[0,0,:,2]
     for i, box in enumerate(boxes):
-        # 20%ˆÈã‚Ì¸“x‚Ìƒ{ƒbƒNƒX‚ğæ‚èo‚µ
+        # 20%ä»¥ä¸Šã®ç²¾åº¦ã®ãƒœãƒƒã‚¯ã‚¹ã‚’å–ã‚Šå‡ºã—
         confidence = confidences[i]
         if confidence < 0.2:
             continue
-        # ƒNƒ‰ƒX‚Ìæ‚èo‚µBƒf[ƒ^ƒZƒbƒg‚æ‚èA15‚Íperson
+        # ã‚¯ãƒ©ã‚¹ã®å–ã‚Šå‡ºã—ã€‚ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã‚ˆã‚Šã€15ã¯person
         idx = int(classes[i])
         if idx != 15:
             continue
 
-        # ”F¯À•W‚Ìæ‚èo‚µ
+        # èªè­˜åº§æ¨™ã®å–ã‚Šå‡ºã—
         (startX, startY, endX, endY) = box.astype('int')
-        # ”F¯À•W‚Ì•`‰æ
+        # èªè­˜åº§æ¨™ã®æç”»
         cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
-        # ”F¯Œ‹‰Ê‚Ì•`‰æ
+        # èªè­˜çµæœã®æç”»
         label = '{}: {:.2f}%'.format('Person', confidence * 100)
         y = startY - 15 if startY - 15 > 15 else startY + 15
         cv2.putText(frame, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
