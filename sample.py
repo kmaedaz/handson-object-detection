@@ -5,7 +5,7 @@ import time
 
 
 app = Flask(__name__)
-camera = PiVideoStream(resolution=(400, 304), framerate=5).start()
+camera = PiVideoStream(resolution=(400, 304), framerate=1).start()
 time.sleep(2)
 
 
